@@ -13,3 +13,5 @@ python yolo_image.py --image [Pfad zum Bild] --yolo [Pfad zur YOLO Konfiguration
 Skript für Videos:
 python yolo_video.py --input [Pfad zum Video] --output [Pfad für den Output] --yolo [Pfad zur YOLO Konfiguration, den Gewichten und den Klassennamen des coco Datensatzes]
 
+In den Ordner Images und Videos sind Beispiele zur Objektdetektion von Hühnern.
+
