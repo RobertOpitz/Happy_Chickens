@@ -3,6 +3,7 @@ import argparse
 import time
 import cv2
 import os
+from sys import exit
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -43,16 +44,21 @@ ln = net.getLayerNames()
 ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 #print(ln)
 
-# initialize the video stream (vs), and frame dimensions
-vs = cv2.VideoCapture(args["input"])
-(W, H) = int(vs.get(3)), int(vs.get(4))
+# initialize the video stream
+video = cv2.VideoCapture(args["input"])
+# Exit if video not opened.
+if not video.isOpened():
+    exit("[ERROR] Could not open video. Program is terminated.")
+
+# get frame dimensions
+(W, H) = int(video.get(3)), int(video.get(4))
 
 # initialize the video writer
 fourcc = cv2.VideoWriter_fourcc(*"MJPG")
 writer = cv2.VideoWriter(args["output"], fourcc, 30, (W, H), True)
 
 # determine the total number of frames in the video file
-total = int(vs.get(cv2.CAP_PROP_FRAME_COUNT))
+total = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
 print("[INFO] {} total frames in video".format(total))
 
 # collecting the total time as the sum of time needed for processing one frame
@@ -65,10 +71,11 @@ for j in range(1, total+1):
     start = time.time()
 
     # GET THE NEXT FRAME FROM THE VIDEO
-    (grapped, frame) = vs.read()
+    (ok, frame) = video.read()
 
-    # if the frame was not grapped, then we have reached the end of the stream
-    if not grapped:
+    # if the frame was not grapped, the either the end of the stram was reached
+    # or something wrng happend
+    if not ok:
         print("[ERROR] Could not read frame. Program is terminated")
         break
 
@@ -174,4 +181,4 @@ for j in range(1, total+1):
 # release the file pointer
 print("\n[INFO] cleaning up ...")
 writer.release()
-vs.release()
+video.release()
